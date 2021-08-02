@@ -4,6 +4,24 @@ from bs4 import BeautifulSoup
 from csv import writer
 import pandas as pandasForSortingCSV
 
+
+'''
+ A function to sort generated csv file 
+ and overwrite the unsorted version.
+'''
+def sort_and_overwrite_csv():
+    try:
+        # CSV file name
+        filename = "./data/eu_road_safety_statistics.csv"
+        # Read the unsorted csv file
+        csvData = pandasForSortingCSV.read_csv(filename) 
+        # Sort data frame by "Road deaths per Million Inhabitants" in decending order
+        csvData.sort_values(["Road deaths per Million Inhabitants"], axis=0, ascending=False, inplace=True)
+        # Save the sorted csv file to overwrite the unsorted version
+        csvData.to_csv(filename)
+    except Exception as e:
+        print("An exception occurred: ", e) 
+
 # Declare target webiste URL
 url = "https://en.wikipedia.org/wiki/Road_safety_in_Europe"
 # Initialize GET request 
@@ -11,22 +29,8 @@ page = requests.get(url)
 # Parse requests response data into a valid HTML with Beautiful Soup
 soup = BeautifulSoup(page.text, 'html.parser')
 
-'''
- A function to sort generated csv file 
- and overwrite the unsorted version.
-'''
-def sort_and_overwrite_csv():
-    # CSV file name
-    filename = "eu_road_safety_statistics.csv"
-    # Read the unsorted csv file
-    csvData = pandasForSortingCSV.read_csv(filename) 
-    # Sort data frame by "Road deaths per Million Inhabitants" in decending order
-    csvData.sort_values(["Road deaths per Million Inhabitants"], axis=0, ascending=False, inplace=True)
-    # Save the sorted csv file to overwrite the unsorted version
-    csvData.to_csv(filename)
-
 # Initilize csv file creation
-with open('eu_road_safety_statistics.csv', 'w', newline='', encoding = 'utf8') as output_file_name:
+with open('./data/eu_road_safety_statistics.csv', 'w', newline='', encoding = 'utf8') as output_file_name:
     # Set csv file name to writer
     thewriter = writer(output_file_name)
     # Declare csv file header
@@ -45,6 +49,7 @@ with open('eu_road_safety_statistics.csv', 'w', newline='', encoding = 'utf8') a
         for tr_row in tr_rows:
             # Declare an empty list to hold each country statistics data
             country_stats_row_list = []
+            
             # Find all available table data (td) and loop through all to extract it content
             country_data = tr_row.find_all('td')
             for data_row in country_data:
